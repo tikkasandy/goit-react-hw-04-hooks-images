@@ -14,7 +14,7 @@ function ImageGallery({ searchQuery }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [status, setStatus] = useState('idle');
   const [showModal, setShowModal] = useState(false);
-  const [modalImage, setModalImage] = useState(null);
+  const [modalImage, setModalImage] = useState({ largeImage: '', alt: '' });
 
   useEffect(() => {
     if (!searchQuery) {
@@ -22,9 +22,14 @@ function ImageGallery({ searchQuery }) {
     }
 
     if (query !== searchQuery) {
+      if (currentPage > 1) {
+        reset();
+        return;
+      }
+
       reset();
     }
-    console.log(searchQuery);
+
     const fetchImages = () => {
       setStatus('pending');
 
@@ -71,11 +76,9 @@ function ImageGallery({ searchQuery }) {
     setImages([]);
     setCurrentPage(1);
     setQuery(searchQuery);
-    console.log('Reset');
   };
 
-  // const { images, showModal, modalImage, status } = this.state;
-  //const { largeImage, alt } = modalImage;
+  const { largeImage, alt } = modalImage;
   return (
     <>
       {images.length > 0 && (
@@ -85,15 +88,13 @@ function ImageGallery({ searchQuery }) {
               key={id}
               image={webformatURL}
               alt={tags}
-              //largeImage={largeImageURL}
+              largeImage={largeImageURL}
               openModal={handleImgClick}
             />
           ))}
         </ul>
       )}
-      {/* {showModal && (
-        // <Modal onClose={this.toggleModal} url={largeImage} alt={alt} />
-      )} */}
+      {showModal && <Modal onClose={toggleModal} url={largeImage} alt={alt} />}
       {status === 'resolved' && <Button onClick={changePage} />}
       {status === 'pending' && <CustomLoader />}
     </>
